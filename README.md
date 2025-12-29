@@ -131,7 +131,7 @@ If you have the unpacked source files:
 ```bash
 # macOS/Linux
 mkdir -p ~/.claude/skills/project-scaffolding
-cp -r SKILL.md scripts/ references/ assets/ ~/.claude/skills/project-scaffolding/
+cp -r SKILL.md scripts/ references/ ~/.claude/skills/project-scaffolding/
 ```
 
 ### Verify Installation
@@ -412,11 +412,10 @@ project-scaffolding/
 ├── SKILL.md              # Main skill definition (70+ project types)
 ├── scripts/
 │   └── scaffold.py       # Scaffolding engine
-├── references/
-│   ├── frameworks.md     # Framework guides
-│   └── best-practices.md # Architecture patterns
-└── assets/
-    └── templates/        # Project templates
+└── references/
+    ├── frameworks.md     # Framework configuration guides
+    ├── best-practices.md # Architecture patterns
+    └── wizard-options.md # Detailed wizard configuration options
 ```
 
 ## Tips for Best Results

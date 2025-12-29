@@ -6,7 +6,7 @@ Comprehensive configuration options for each supported framework, comparable to 
 
 ### React (with Vite)
 
-#### Recommended Stack (2024)
+#### Recommended Stack
 ```
 Build Tool:     Vite (fast HMR, ESM-native)
 Language:       TypeScript (strict mode)
@@ -125,9 +125,9 @@ export function useCreateUser() {
 
 ### Next.js
 
-#### Recommended Stack (2024)
+#### Recommended Stack
 ```
-Version:        14.x with App Router
+Version:        14+ with App Router
 Language:       TypeScript (strict)
 Styling:        Tailwind CSS
 Database:       Prisma or Drizzle
@@ -219,7 +219,7 @@ export async function createUser(formData: FormData) {
 
 ### Vue 3
 
-#### Recommended Stack (2024)
+#### Recommended Stack
 ```
 Build Tool:     Vite
 Language:       TypeScript
@@ -413,9 +413,9 @@ routes/
 
 ### FastAPI
 
-#### Recommended Stack (2024)
+#### Recommended Stack
 ```
-Python:         3.11+
+Python:         3.12+
 Async:          Full async/await
 Database:       PostgreSQL + asyncpg
 ORM:            SQLAlchemy 2.0 (async)
@@ -565,7 +565,7 @@ async def get_current_user(
 
 ### Django
 
-#### Recommended Stack (2024)
+#### Recommended Stack
 ```
 Version:        5.x
 API:            Django REST Framework
@@ -630,10 +630,10 @@ AUTH_USER_MODEL = 'users.User'
 
 ### Express.js
 
-#### Recommended Stack (2024)
+#### Recommended Stack
 ```
 Language:       TypeScript
-Runtime:        Node.js 20+
+Runtime:        Node.js 22+
 ORM:            Prisma or Drizzle
 Validation:     Zod
 Auth:           Passport.js or custom JWT
@@ -693,7 +693,7 @@ export const validate = (schema: ZodSchema) => {
 
 ### NestJS
 
-#### Recommended Stack (2024)
+#### Recommended Stack
 ```
 Language:       TypeScript
 ORM:            Prisma or TypeORM
