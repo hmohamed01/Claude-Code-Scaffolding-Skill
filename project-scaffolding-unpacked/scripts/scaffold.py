@@ -73,8 +73,8 @@ class ProjectConfig:
     version: str = "0.1.0"
 
     # SDK/Runtime
-    node_version: str = "20"
-    python_version: str = "3.11"
+    node_version: str = "22"
+    python_version: str = "3.12"
     package_manager: PackageManager = PackageManager.NPM
 
     # Framework options
@@ -105,7 +105,6 @@ class ProjectScaffolder:
 
     def __init__(self, base_path: Path = Path.cwd()):
         self.base_path = base_path
-        self.templates_dir = Path(__file__).parent.parent / "assets" / "templates"
 
     def create_project(self, config: ProjectConfig) -> Path:
         """Create a new project from configuration."""
@@ -299,7 +298,7 @@ class ProjectScaffolder:
         if config.language == Language.TYPESCRIPT:
             dev_deps.update({
                 "typescript": "^5.3.0",
-                "@types/node": "^20.0.0",
+                "@types/node": "^22.0.0",
                 "@types/react": "^18.2.0",
                 "@types/react-dom": "^18.2.0",
             })
@@ -621,7 +620,7 @@ class ProjectScaffolder:
         if config.language == Language.TYPESCRIPT:
             dev_deps.update({
                 "typescript": "^5.3.0",
-                "@types/node": "^20.0.0",
+                "@types/node": "^22.0.0",
                 "@types/express": "^4.17.0",
                 "@types/cors": "^2.8.0",
                 "@types/morgan": "^1.9.0",
@@ -704,8 +703,8 @@ class ProjectScaffolder:
         }
         dev_deps = {
             "@nestjs/cli": "^10.0.0",
-            "@nestjs/swtc": "^10.0.0",
-            "@types/node": "^20.0.0",
+            "@nestjs/schematics": "^10.0.0",
+            "@types/node": "^22.0.0",
             "@types/express": "^4.17.0",
             "typescript": "^5.3.0",
             "ts-node": "^10.9.0",
@@ -1074,7 +1073,7 @@ class ProjectScaffolder:
         if config.language == Language.TYPESCRIPT:
             dev_deps.update({
                 "typescript": "^5.3.0",
-                "@types/node": "^20.0.0",
+                "@types/node": "^22.0.0",
                 "tsup": "^8.0.0",
             })
 
@@ -1115,7 +1114,7 @@ class ProjectScaffolder:
         if config.language == Language.TYPESCRIPT:
             dev_deps.update({
                 "typescript": "^5.3.0",
-                "@types/node": "^20.0.0",
+                "@types/node": "^22.0.0",
             })
 
         package_json = self._create_package_json(config, deps, dev_deps, {
