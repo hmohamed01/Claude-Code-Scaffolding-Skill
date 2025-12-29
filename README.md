@@ -432,6 +432,7 @@ project-scaffolding/
 
 ## Version History
 
+- **v2.2** - Restructured skill with progressive disclosure, added comprehensive wizard-options.md covering all 70+ project types, updated version defaults (Node.js 22, Python 3.12, Go 1.23)
 - **v2.1** - Added HTML/CSS static websites, Go, Rust, Java backends, mobile frameworks, browser extensions, serverless
 - **v2.0** - Initial enhanced release with 40+ project types
 - **v1.0** - Basic web framework support
