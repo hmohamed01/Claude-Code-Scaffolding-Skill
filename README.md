@@ -5,7 +5,7 @@ IDE-grade project scaffolding wizard comparable to WebStorm and PyCharm project 
 ## Features
 
 - **Interactive Wizard Workflow**: Step-by-step project configuration like JetBrains IDEs
-- **50+ Project Types**: From simple HTML/CSS to complex full-stack applications
+- **70+ Project Types**: From simple HTML/CSS to complex full-stack applications
 - **SDK/Environment Configuration**: Node.js, Python, Go, Rust, Java version selection
 - **Framework-Specific Options**: TypeScript, CSS frameworks, state management, routing
 - **Database & ORM Setup**: PostgreSQL, MySQL, SQLite, MongoDB with various ORMs
