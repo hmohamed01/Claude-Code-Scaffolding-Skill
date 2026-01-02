@@ -115,6 +115,8 @@ class ProjectScaffolder:
 
         # Map project types to creation methods
         creators = {
+            # Static Sites
+            "html": self._create_html,
             # Frontend
             "react": self._create_react,
             "nextjs": self._create_nextjs,
@@ -590,6 +592,152 @@ class ProjectScaffolder:
         self._write_json(path / "tsconfig.json", self._create_tsconfig(config, "angular"))
 
         self._create_common_files(path, config)
+
+    # =========================================================================
+    # Static Websites
+    # =========================================================================
+
+    def _create_html(self, path: Path, config: ProjectConfig):
+        """Create a static HTML/CSS website."""
+        # Create directory structure
+        self._create_dirs(path, [
+            "css",
+            "js",
+            "images",
+        ])
+
+        # Main HTML file
+        self._write_file(path / "index.html", self._html_index(config))
+
+        # Additional pages
+        self._write_file(path / "about.html", self._html_about(config))
+        self._write_file(path / "contact.html", self._html_contact(config))
+
+        # CSS files
+        self._write_file(path / "css/reset.css", self._css_reset())
+        self._write_file(path / "css/style.css", self._css_main(config))
+
+        # JavaScript
+        self._write_file(path / "js/main.js", self._js_main())
+
+        # Favicon and robots.txt
+        self._write_file(path / "robots.txt", "User-agent: *\nDisallow:\n")
+
+        # Package.json for dev server (optional)
+        if config.css_framework == CSSFramework.TAILWIND:
+            package_json = {
+                "name": config.name,
+                "version": config.version,
+                "description": config.description or "",
+                "scripts": {
+                    "dev": "npx tailwindcss -i ./css/style.css -o ./css/output.css --watch",
+                    "build": "npx tailwindcss -i ./css/style.css -o ./css/output.css --minify",
+                },
+                "devDependencies": {
+                    "tailwindcss": "^3.4.0"
+                }
+            }
+            self._write_json(path / "package.json", package_json)
+
+            # Create Tailwind config (no PostCSS needed for CLI usage)
+            tailwind_config = """/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./**/*.html'],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+"""
+            self._write_file(path / "tailwind.config.js", tailwind_config)
+        else:
+            # Simple package.json for live server
+            package_json = {
+                "name": config.name,
+                "version": config.version,
+                "description": config.description or "",
+                "scripts": {
+                    "dev": "npx live-server",
+                },
+                "devDependencies": {
+                    "live-server": "^1.2.2"
+                }
+            }
+            self._write_json(path / "package.json", package_json)
+
+        # Create basic README
+        readme = f"""# {config.name}
+
+{config.description or 'A static HTML/CSS website'}
+
+## Development
+
+Start the development server:
+
+```bash
+npm install
+npm run dev
+```
+
+The site will be available at http://localhost:8080
+
+## Project Structure
+
+```
+{config.name}/
+├── index.html          # Home page
+├── about.html          # About page
+├── contact.html        # Contact page
+├── css/
+│   ├── reset.css       # CSS reset
+│   └── style.css       # Main styles
+├── js/
+│   └── main.js         # Main JavaScript
+├── images/             # Image assets
+└── robots.txt          # SEO
+```
+
+## Features
+
+- Mobile-first responsive design
+- BEM naming convention for CSS
+- Semantic HTML5
+- SEO-ready
+{'- Tailwind CSS' if config.css_framework == CSSFramework.TAILWIND else '- Pure CSS'}
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## License
+
+{config.license}
+"""
+        self._write_file(path / "README.md", readme)
+
+        # .gitignore for HTML projects
+        gitignore = """# Dependencies
+node_modules/
+
+# Tailwind output
+css/output.css
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.sublime-*
+
+# Logs
+*.log
+"""
+        self._write_file(path / ".gitignore", gitignore)
 
     # =========================================================================
     # Backend Projects
@@ -1510,6 +1658,7 @@ cp .env.example .env.local
     def _create_tailwind_config(self, path: Path, config: ProjectConfig, framework: str = "react"):
         """Create Tailwind CSS configuration."""
         content_paths = {
+            "html": "'./**/*.html'",
             "react": "'./index.html', './src/**/*.{js,ts,jsx,tsx}'",
             "nextjs": "'./src/**/*.{js,ts,jsx,tsx,mdx}'",
             "vue": "'./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'",
@@ -2831,6 +2980,508 @@ contextBridge.exposeInMainWorld('electronAPI', {
 </html>
 """
 
+    # =========================================================================
+    # HTML/CSS Templates
+    # =========================================================================
+
+    def _html_css_links(self, config: ProjectConfig) -> str:
+        """Generate CSS link tags based on framework configuration."""
+        if config.css_framework == CSSFramework.TAILWIND:
+            return '\n    <link rel="stylesheet" href="css/output.css">'
+        return '''
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">'''
+
+    def _html_header(self, config: ProjectConfig, active_page: str = "index") -> str:
+        """Generate HTML header with navigation."""
+        nav_items = [
+            ("index.html", "Home", "index"),
+            ("about.html", "About", "about"),
+            ("contact.html", "Contact", "contact"),
+        ]
+        nav_links = "\n".join(
+            f'                <li class="nav__item"><a href="{href}" class="nav__link{" nav__link--active" if key == active_page else ""}">{label}</a></li>'
+            for href, label, key in nav_items
+        )
+        return f'''    <header class="header">
+        <nav class="nav">
+            <div class="nav__logo">
+                <a href="index.html">{config.name}</a>
+            </div>
+            <ul class="nav__menu">
+{nav_links}
+            </ul>
+        </nav>
+    </header>'''
+
+    def _html_footer(self, config: ProjectConfig) -> str:
+        """Generate HTML footer."""
+        return f'''    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 {config.name}. All rights reserved.</p>
+        </div>
+    </footer>'''
+
+    def _html_index(self, config: ProjectConfig) -> str:
+        """Generate index.html for static website."""
+        css_links = self._html_css_links(config)
+        header = self._html_header(config, "index")
+        footer = self._html_footer(config)
+
+        return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{config.description or config.name}">
+    <meta name="author" content="{config.author or ''}">
+    <title>{config.name}</title>{css_links}
+</head>
+<body>
+{header}
+
+    <!-- Main Content -->
+    <main class="main">
+        <section class="hero">
+            <div class="hero__content">
+                <h1 class="hero__title">Welcome to {config.name}</h1>
+                <p class="hero__subtitle">{config.description or 'A modern, responsive website'}</p>
+                <a href="about.html" class="btn btn--primary">Learn More</a>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <h2 class="section__title">Features</h2>
+                <div class="features__grid">
+                    <div class="feature">
+                        <h3 class="feature__title">Responsive Design</h3>
+                        <p class="feature__text">Works seamlessly on all devices</p>
+                    </div>
+                    <div class="feature">
+                        <h3 class="feature__title">Modern CSS</h3>
+                        <p class="feature__text">Clean and maintainable styles</p>
+                    </div>
+                    <div class="feature">
+                        <h3 class="feature__title">Fast Performance</h3>
+                        <p class="feature__text">Optimized for speed</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+{footer}
+
+    <script src="js/main.js"></script>
+</body>
+</html>
+"""
+
+    def _html_about(self, config: ProjectConfig) -> str:
+        """Generate about.html page."""
+        css_links = self._html_css_links(config)
+        header = self._html_header(config, "about")
+        footer = self._html_footer(config)
+
+        return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="About {config.name}">
+    <title>About - {config.name}</title>{css_links}
+</head>
+<body>
+{header}
+
+    <main class="main">
+        <section class="page-header">
+            <div class="container">
+                <h1 class="page-header__title">About Us</h1>
+                <p class="page-header__subtitle">Learn more about {config.name}</p>
+            </div>
+        </section>
+
+        <section class="content">
+            <div class="container">
+                <p>This is the about page. Add your content here.</p>
+            </div>
+        </section>
+    </main>
+
+{footer}
+
+    <script src="js/main.js"></script>
+</body>
+</html>
+"""
+
+    def _html_contact(self, config: ProjectConfig) -> str:
+        """Generate contact.html page."""
+        css_links = self._html_css_links(config)
+        header = self._html_header(config, "contact")
+        footer = self._html_footer(config)
+
+        return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact {config.name}">
+    <title>Contact - {config.name}</title>{css_links}
+</head>
+<body>
+{header}
+
+    <main class="main">
+        <section class="page-header">
+            <div class="container">
+                <h1 class="page-header__title">Contact Us</h1>
+                <p class="page-header__subtitle">Get in touch</p>
+            </div>
+        </section>
+
+        <section class="content">
+            <div class="container">
+                <form class="contact-form" action="#" method="post">
+                    <div class="form-group">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" id="name" name="name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" name="email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea id="message" name="message" class="form-textarea" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn--primary">Send Message</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+{footer}
+
+    <script src="js/main.js"></script>
+</body>
+</html>
+"""
+
+    def _css_reset(self) -> str:
+        """Generate CSS reset file."""
+        return """/* CSS Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    line-height: 1.6;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font: inherit;
+}
+
+ul {
+    list-style: none;
+}
+"""
+
+    def _css_main(self, config: ProjectConfig) -> str:
+        """Generate main stylesheet with BEM methodology."""
+        if config.css_framework == CSSFramework.TAILWIND:
+            return """@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles can be added here */
+"""
+
+        return """/* Variables */
+:root {
+    --color-primary: #3b82f6;
+    --color-primary-dark: #2563eb;
+    --color-secondary: #64748b;
+    --color-text: #1e293b;
+    --color-text-light: #64748b;
+    --color-background: #ffffff;
+    --color-background-light: #f8fafc;
+    --color-border: #e2e8f0;
+
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+
+    --border-radius: 0.5rem;
+    --box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Global Styles */
+body {
+    font-family: var(--font-sans);
+    color: var(--color-text);
+    background-color: var(--color-background);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+/* Header & Navigation */
+.header {
+    background-color: var(--color-background);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.nav__logo a {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.nav__menu {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.nav__link {
+    color: var(--color-text-light);
+    transition: color 0.2s;
+}
+
+.nav__link:hover,
+.nav__link--active {
+    color: var(--color-primary);
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: var(--spacing-xl) 0;
+    text-align: center;
+}
+
+.hero__content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+.hero__title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: var(--spacing-sm);
+}
+
+.hero__subtitle {
+    font-size: 1.25rem;
+    margin-bottom: var(--spacing-lg);
+    opacity: 0.9;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn--primary {
+    background-color: white;
+    color: var(--color-primary);
+}
+
+.btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Features Section */
+.features {
+    padding: var(--spacing-xl) 0;
+}
+
+.section__title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.features__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+}
+
+.feature {
+    padding: var(--spacing-lg);
+    background-color: var(--color-background-light);
+    border-radius: var(--border-radius);
+    text-align: center;
+}
+
+.feature__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-primary);
+}
+
+.feature__text {
+    color: var(--color-text-light);
+}
+
+/* Page Header */
+.page-header {
+    background-color: var(--color-background-light);
+    padding: var(--spacing-xl) 0;
+    text-align: center;
+}
+
+.page-header__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+}
+
+.page-header__subtitle {
+    font-size: 1.125rem;
+    color: var(--color-text-light);
+}
+
+/* Content Section */
+.content {
+    padding: var(--spacing-xl) 0;
+}
+
+/* Contact Form */
+.contact-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: 600;
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    font-family: inherit;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+/* Footer */
+.footer {
+    background-color: var(--color-background-light);
+    border-top: 1px solid var(--color-border);
+    padding: var(--spacing-lg) 0;
+    text-align: center;
+    color: var(--color-text-light);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero__title {
+        font-size: 2rem;
+    }
+
+    .nav__menu {
+        gap: var(--spacing-sm);
+    }
+
+    .features__grid {
+        grid-template-columns: 1fr;
+    }
+}
+"""
+
+    def _js_main(self) -> str:
+        """Generate main JavaScript file."""
+        return """// Main JavaScript file
+console.log('Website loaded successfully');
+
+// Mobile menu toggle (if needed)
+document.addEventListener('DOMContentLoaded', () => {
+    // Add your JavaScript here
+
+    // Example: Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+});
+"""
+
 
 def main():
     """Main entry point for CLI usage."""
@@ -2841,13 +3492,14 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
+  %(prog)s html my-site --tailwind
   %(prog)s react my-app --typescript --tailwind
   %(prog)s nextjs my-app --database postgresql --orm prisma
   %(prog)s fastapi my-api --database postgresql --orm sqlalchemy
   %(prog)s python my-lib --pytest --ruff
         """
     )
-    parser.add_argument("type", help="Project type (react, nextjs, vue, fastapi, django, etc.)")
+    parser.add_argument("type", help="Project type (html, react, nextjs, vue, fastapi, django, etc.)")
     parser.add_argument("name", help="Project name")
     parser.add_argument("--description", help="Project description")
     parser.add_argument("--author", help="Author name")

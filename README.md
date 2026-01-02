@@ -432,6 +432,7 @@ project-scaffolding/
 
 ## Version History
 
+- **v2.4** - Improved HTML support: fixed Tailwind CLI configuration (removed orphaned PostCSS config), refactored template methods to eliminate code duplication (added helper methods for CSS links, header, footer), improved code maintainability
 - **v2.3** - Fixed scaffold.py: NestJS typo (@nestjs/swtc → @nestjs/schematics), removed unused templates_dir, updated @types/node to v22
 - **v2.2** - Restructured skill with progressive disclosure, added comprehensive wizard-options.md covering all 70+ project types, updated version defaults (Node.js 22, Python 3.12, Go 1.23)
 - **v2.1** - Added HTML/CSS static websites, Go, Rust, Java backends, mobile frameworks, browser extensions, serverless
