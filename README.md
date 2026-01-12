@@ -1,5 +1,11 @@
 # Project Scaffolding Skill for Claude Code
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-2.4-green.svg)](README.md#version-history)
+[![Project Types](https://img.shields.io/badge/project%20types-70%2B-orange.svg)](README.md#supported-project-types)
+[![Python](https://img.shields.io/badge/python-3.10%2B-3776ab.svg)](scripts/scaffold.py)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-skill-blueviolet.svg)](SKILL.md)
+
 IDE-grade project scaffolding wizard comparable to WebStorm and PyCharm project wizards. Supports **70+ project types** across web, mobile, desktop, and backend development.
 
 ## Features
