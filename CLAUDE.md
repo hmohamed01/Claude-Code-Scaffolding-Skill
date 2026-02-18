@@ -173,12 +173,12 @@ To verify changes:
 ## Common Tasks
 
 ### Update Default Node.js Version
-Search for `node_version: str = "20"` in ProjectConfig (line 76) and update. Also update in templates:
+Search for `node_version: str = "24"` in ProjectConfig (line 76) and update. Also update in templates:
 - Dockerfile templates (search for `FROM node:`)
 - GitHub Actions workflows (search for `node-version:`)
 
 ### Update Default Python Version
-Search for `python_version: str = "3.11"` in ProjectConfig (line 77). Update in:
+Search for `python_version: str = "3.14"` in ProjectConfig (line 77). Update in:
 - Dockerfile templates
 - GitHub Actions workflows
 - pyproject.toml templates

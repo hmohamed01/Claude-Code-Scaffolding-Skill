@@ -25,7 +25,7 @@ Present the project type menu. Ask the user to select a category and type:
 
 | Category | Types |
 |----------|-------|
-| **Static Websites** | HTML/CSS, HTML+Sass, HTML+Tailwind, Landing Page, Multi-page Site |
+| **Static Websites** | HTML5 (no CSS), HTML/CSS, HTML+Sass, HTML+Tailwind, Landing Page, Multi-page Site |
 | **Frontend Web** | React, Next.js, Vue, Nuxt, Svelte, Angular, Astro, Remix, Solid, Qwik, Preact |
 | **Mobile/Desktop** | React Native, Expo, Flutter, Tauri, Electron, Ionic |
 | **Backend (JS/TS)** | Express, NestJS, Fastify, Hono, Elysia, tRPC, Koa |
@@ -191,7 +191,7 @@ User: Create a full-stack app with type-safe API
 
 Claude: I recommend the T3 Stack:
 
-- Next.js 14 (App Router)
+- Next.js 16 (App Router)
 - tRPC (type-safe API)
 - Prisma (type-safe ORM)
 - Tailwind CSS
@@ -237,11 +237,11 @@ Load reference files based on what you need:
 
 | Category | Recommendation |
 |----------|----------------|
-| JS Runtime | Node.js 22 LTS |
+| JS Runtime | Node.js 24 LTS |
 | Package Manager | pnpm |
-| Python Version | 3.12 |
-| Go Version | 1.23 |
-| Rust Edition | 2021 |
+| Python Version | 3.14 |
+| Go Version | 1.26 |
+| Rust Edition | 2024 |
 | Java Version | 21 LTS |
 | CSS Framework | Tailwind CSS |
 | State (React) | Zustand + TanStack Query |

@@ -112,36 +112,23 @@ settings = Settings()
 
 ## Code Quality Setup
 
-### ESLint Configuration (2024)
+### ESLint Configuration (Flat Config)
 
-**Flat Config (eslint.config.js) - Recommended:**
+**eslint.config.js — Required for ESLint 9+:**
 ```javascript
 import js from '@eslint/js';
-import typescript from '@typescript-eslint/eslint-plugin';
-import typescriptParser from '@typescript-eslint/parser';
-import react from 'eslint-plugin-react';
+import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
   js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
-    files: ['**/*.{ts,tsx}'],
-    languageOptions: {
-      parser: typescriptParser,
-      parserOptions: {
-        project: './tsconfig.json',
-      },
-    },
     plugins: {
-      '@typescript-eslint': typescript,
-      react,
       'react-hooks': reactHooks,
     },
     rules: {
-      '@typescript-eslint/no-unused-vars': 'error',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
+      ...reactHooks.configs.recommended.rules,
     },
   },
 ];
@@ -166,7 +153,7 @@ export default [
 **ruff.toml:**
 ```toml
 line-length = 100
-target-version = "py311"
+target-version = "py314"
 
 [lint]
 select = [
@@ -212,14 +199,14 @@ export default {
 ```yaml
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.9
+    rev: v0.9.0
     hooks:
       - id: ruff
         args: [--fix]
       - id: ruff-format
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
+    rev: v1.14.0
     hooks:
       - id: mypy
         additional_dependencies: [types-all]
@@ -492,7 +479,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - run: npm run lint
@@ -504,7 +491,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - run: npm run test -- --coverage
@@ -517,7 +504,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - run: npm run build
@@ -546,7 +533,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - run: pip install ruff mypy
       - run: ruff check .
       - run: ruff format --check .
@@ -556,7 +543,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:15
+        image: postgres:17
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -571,7 +558,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - run: pip install -r requirements.txt -r requirements-dev.txt
       - run: pytest --cov --cov-report=xml
         env:
@@ -588,7 +575,7 @@ jobs:
 ```dockerfile
 # syntax=docker/dockerfile:1
 
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 WORKDIR /app
 
 # Dependencies
@@ -624,7 +611,7 @@ CMD ["node", "dist/index.js"]
 ```dockerfile
 # syntax=docker/dockerfile:1
 
-FROM python:3.11-slim AS builder
+FROM python:3.14-slim AS builder
 
 WORKDIR /app
 
@@ -633,7 +620,7 @@ RUN pip install --no-cache-dir poetry
 COPY pyproject.toml poetry.lock* ./
 RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
 
-FROM python:3.11-slim AS runner
+FROM python:3.14-slim AS runner
 
 WORKDIR /app
 
@@ -653,8 +640,6 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 ```yaml
 # docker-compose.yml
-version: '3.8'
-
 services:
   app:
     build:
@@ -674,7 +659,7 @@ services:
     command: npm run dev
 
   db:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -722,8 +707,8 @@ Brief description of the project.
 
 ## Prerequisites
 
-- Node.js 20+
-- PostgreSQL 15+
+- Node.js 24+
+- PostgreSQL 17+
 - Docker (optional)
 
 ## Getting Started

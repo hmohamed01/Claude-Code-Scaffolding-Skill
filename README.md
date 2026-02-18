@@ -1,7 +1,7 @@
 # Project Scaffolding Skill for Claude Code
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-2.4-green.svg)](README.md#version-history)
+[![Version](https://img.shields.io/badge/version-3.0-green.svg)](README.md#version-history)
 [![Project Types](https://img.shields.io/badge/project%20types-70%2B-orange.svg)](README.md#supported-project-types)
 [![Python](https://img.shields.io/badge/python-3.10%2B-3776ab.svg)](scripts/scaffold.py)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-skill-blueviolet.svg)](SKILL.md)
@@ -22,6 +22,7 @@ IDE-grade project scaffolding wizard comparable to WebStorm and PyCharm project 
 ## Supported Project Types
 
 ### Static Websites (HTML/CSS/JS)
+- Pure HTML5 (no CSS)
 - HTML/CSS (no build tools)
 - HTML + Sass/SCSS
 - HTML + Tailwind CLI
@@ -30,7 +31,7 @@ IDE-grade project scaffolding wizard comparable to WebStorm and PyCharm project 
 
 ### Frontend Web Frameworks
 - React (Vite)
-- Next.js 14 (App Router)
+- Next.js 16 (App Router)
 - Vue 3 / Nuxt 3
 - SvelteKit
 - Angular
@@ -257,7 +258,7 @@ Proceed?
 
 | Option | Choices |
 |--------|---------|
-| Runtime | Node.js 18/20/22, Bun, Deno |
+| Runtime | Node.js 22/24, Bun, Deno |
 | Package Manager | npm, yarn, pnpm, bun |
 | CSS | Tailwind, CSS Modules, Styled Components, Emotion |
 | State | Zustand, Jotai, Redux, TanStack Query |
@@ -267,7 +268,7 @@ Proceed?
 
 | Option | Choices |
 |--------|---------|
-| Version | 3.10, 3.11, 3.12, 3.13 |
+| Version | 3.12, 3.13, 3.14 |
 | Environment | venv, uv, poetry, pipenv, conda |
 | ORM | SQLAlchemy 2.0, SQLModel, Tortoise, Beanie |
 | Linting | Ruff, Flake8+Black, Pylint |
@@ -277,7 +278,7 @@ Proceed?
 
 | Option | Choices |
 |--------|---------|
-| Version | 1.21, 1.22, 1.23 |
+| Version | 1.25, 1.26 |
 | Framework | Gin, Fiber, Echo, Chi |
 | Database | sqlc, GORM, sqlx, Ent |
 | Testing | Built-in, Testify |
@@ -438,6 +439,7 @@ project-scaffolding/
 
 ## Version History
 
+- **v3.0** - Major update: Tailwind CSS v4 (CSS-first config), ESLint flat config, React 19, Next.js 16, Svelte 5 (Runes), Angular 19, Vite 7, Express 5. Runtime defaults: Node.js 24, Python 3.14, Go 1.26, Rust 2024. New: Pure HTML5 static website option
 - **v2.4** - Improved HTML support: fixed Tailwind CLI configuration (removed orphaned PostCSS config), refactored template methods to eliminate code duplication (added helper methods for CSS links, header, footer), improved code maintainability
 - **v2.3** - Fixed scaffold.py: NestJS typo (@nestjs/swtc → @nestjs/schematics), removed unused templates_dir, updated @types/node to v22
 - **v2.2** - Restructured skill with progressive disclosure, added comprehensive wizard-options.md covering all 70+ project types, updated version defaults (Node.js 22, Python 3.12, Go 1.23)

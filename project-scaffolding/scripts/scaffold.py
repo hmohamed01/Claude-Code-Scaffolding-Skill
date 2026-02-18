@@ -73,8 +73,8 @@ class ProjectConfig:
     version: str = "0.1.0"
 
     # SDK/Runtime
-    node_version: str = "22"
-    python_version: str = "3.12"
+    node_version: str = "24"
+    python_version: str = "3.14"
     package_manager: PackageManager = PackageManager.NPM
 
     # Framework options
@@ -168,51 +168,42 @@ class ProjectScaffolder:
         # Package.json
         ext = "tsx" if config.language == Language.TYPESCRIPT else "jsx"
         deps = {
-            "react": "^18.2.0",
-            "react-dom": "^18.2.0",
+            "react": "^19.2.0",
+            "react-dom": "^19.2.0",
         }
         dev_deps = {
-            "@vitejs/plugin-react": "^4.2.0",
-            "vite": "^5.0.0",
+            "@vitejs/plugin-react": "^4.3.0",
+            "vite": "^7.0.0",
         }
 
         if config.language == Language.TYPESCRIPT:
-            dev_deps.update({
-                "typescript": "^5.3.0",
-                "@types/react": "^18.2.0",
-                "@types/react-dom": "^18.2.0",
-            })
+            dev_deps["typescript"] = "^5.8.0"
 
         if config.css_framework == CSSFramework.TAILWIND:
-            dev_deps.update({
-                "tailwindcss": "^3.4.0",
-                "postcss": "^8.4.0",
-                "autoprefixer": "^10.4.0",
-            })
+            dev_deps["tailwindcss"] = "^4.1.0"
 
         if config.eslint:
             dev_deps.update({
-                "eslint": "^8.56.0",
-                "eslint-plugin-react": "^7.33.0",
-                "eslint-plugin-react-hooks": "^4.6.0",
+                "eslint": "^9.17.0",
+                "@eslint/js": "^9.17.0",
+                "eslint-plugin-react-hooks": "^5.0.0",
             })
             if config.language == Language.TYPESCRIPT:
-                dev_deps["@typescript-eslint/eslint-plugin"] = "^6.0.0"
-                dev_deps["@typescript-eslint/parser"] = "^6.0.0"
+                dev_deps["typescript-eslint"] = "^8.18.0"
 
         if config.prettier:
-            dev_deps["prettier"] = "^3.1.0"
+            dev_deps["prettier"] = "^3.5.0"
 
         if config.testing:
             dev_deps.update({
-                "vitest": "^1.0.0",
-                "@testing-library/react": "^14.0.0",
+                "vitest": "^3.0.0",
+                "@testing-library/react": "^16.0.0",
                 "@testing-library/jest-dom": "^6.0.0",
             })
 
         # State management based on features
         if "zustand" in config.features:
-            deps["zustand"] = "^4.4.0"
+            deps["zustand"] = "^5.0.0"
         if "redux" in config.features:
             deps["@reduxjs/toolkit"] = "^2.0.0"
             deps["react-redux"] = "^9.0.0"
@@ -223,7 +214,7 @@ class ProjectScaffolder:
 
         # Routing
         if "react-router" in config.features:
-            deps["react-router-dom"] = "^6.20.0"
+            deps["react-router-dom"] = "^7.0.0"
 
         package_json = self._create_package_json(config, deps, dev_deps, {
             "dev": "vite",
@@ -291,48 +282,42 @@ class ProjectScaffolder:
             self._create_dirs(path, ["prisma"])
 
         deps = {
-            "next": "^14.0.0",
-            "react": "^18.2.0",
-            "react-dom": "^18.2.0",
+            "next": "^16.0.0",
+            "react": "^19.2.0",
+            "react-dom": "^19.2.0",
         }
         dev_deps = {}
 
         if config.language == Language.TYPESCRIPT:
             dev_deps.update({
-                "typescript": "^5.3.0",
+                "typescript": "^5.8.0",
                 "@types/node": "^22.0.0",
-                "@types/react": "^18.2.0",
-                "@types/react-dom": "^18.2.0",
             })
 
         if config.css_framework == CSSFramework.TAILWIND:
-            dev_deps.update({
-                "tailwindcss": "^3.4.0",
-                "postcss": "^8.4.0",
-                "autoprefixer": "^10.4.0",
-            })
+            dev_deps["tailwindcss"] = "^4.1.0"
 
         if config.eslint:
             dev_deps.update({
-                "eslint": "^8.56.0",
-                "eslint-config-next": "^14.0.0",
+                "eslint": "^9.17.0",
+                "eslint-config-next": "^16.0.0",
             })
 
         if config.prettier:
-            dev_deps["prettier"] = "^3.1.0"
-            dev_deps["prettier-plugin-tailwindcss"] = "^0.5.0"
+            dev_deps["prettier"] = "^3.5.0"
+            dev_deps["prettier-plugin-tailwindcss"] = "^0.6.0"
 
         if config.testing:
             dev_deps.update({
-                "vitest": "^1.0.0",
-                "@testing-library/react": "^14.0.0",
-                "@vitejs/plugin-react": "^4.2.0",
+                "vitest": "^3.0.0",
+                "@testing-library/react": "^16.0.0",
+                "@vitejs/plugin-react": "^4.3.0",
             })
 
         # ORM
         if config.orm == ORM.PRISMA:
-            deps["@prisma/client"] = "^5.7.0"
-            dev_deps["prisma"] = "^5.7.0"
+            deps["@prisma/client"] = "^6.0.0"
+            dev_deps["prisma"] = "^6.0.0"
 
         # Auth
         if "nextauth" in config.features:
@@ -352,7 +337,7 @@ class ProjectScaffolder:
         self._write_json(path / "package.json", package_json)
 
         # Next.js config
-        self._write_file(path / "next.config.js", self._nextjs_config(config))
+        self._write_file(path / "next.config.ts", self._nextjs_config(config))
 
         # TypeScript config
         if config.language == Language.TYPESCRIPT:
@@ -364,10 +349,15 @@ class ProjectScaffolder:
 
         # ESLint config
         if config.eslint:
-            self._write_json(path / ".eslintrc.json", {
-                "extends": ["next/core-web-vitals"],
-                "rules": {}
-            })
+            self._write_file(path / "eslint.config.js", """import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { FlatCompat } from '@eslint/eslintrc';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const compat = new FlatCompat({ baseDirectory: __dirname });
+
+export default [...compat.extends('next/core-web-vitals')];
+""")
 
         # Prettier config
         if config.prettier:
@@ -403,16 +393,16 @@ class ProjectScaffolder:
             "tests",
         ])
 
-        deps = {"vue": "^3.4.0"}
+        deps = {"vue": "^3.5.0"}
         dev_deps = {
-            "@vitejs/plugin-vue": "^4.5.0",
-            "vite": "^5.0.0",
+            "@vitejs/plugin-vue": "^5.2.0",
+            "vite": "^7.0.0",
         }
 
         if config.language == Language.TYPESCRIPT:
             dev_deps.update({
-                "typescript": "^5.3.0",
-                "vue-tsc": "^1.8.0",
+                "typescript": "^5.8.0",
+                "vue-tsc": "^2.2.0",
             })
 
         if "pinia" in config.features:
@@ -422,11 +412,7 @@ class ProjectScaffolder:
             deps["vue-router"] = "^4.2.0"
 
         if config.css_framework == CSSFramework.TAILWIND:
-            dev_deps.update({
-                "tailwindcss": "^3.4.0",
-                "postcss": "^8.4.0",
-                "autoprefixer": "^10.4.0",
-            })
+            dev_deps["tailwindcss"] = "^4.1.0"
 
         package_json = self._create_package_json(config, deps, dev_deps, {
             "dev": "vite",
@@ -506,25 +492,21 @@ class ProjectScaffolder:
 
         deps = {}
         dev_deps = {
-            "@sveltejs/adapter-auto": "^3.0.0",
+            "@sveltejs/adapter-auto": "^4.0.0",
             "@sveltejs/kit": "^2.0.0",
-            "svelte": "^4.2.0",
-            "vite": "^5.0.0",
+            "svelte": "^5.0.0",
+            "vite": "^7.0.0",
         }
 
         if config.language == Language.TYPESCRIPT:
             dev_deps.update({
-                "typescript": "^5.3.0",
-                "svelte-check": "^3.6.0",
+                "typescript": "^5.8.0",
+                "svelte-check": "^4.1.0",
                 "tslib": "^2.6.0",
             })
 
         if config.css_framework == CSSFramework.TAILWIND:
-            dev_deps.update({
-                "tailwindcss": "^3.4.0",
-                "postcss": "^8.4.0",
-                "autoprefixer": "^10.4.0",
-            })
+            dev_deps["tailwindcss"] = "^4.1.0"
 
         package_json = self._create_package_json(config, deps, dev_deps, {
             "dev": "vite dev",
@@ -564,19 +546,19 @@ class ProjectScaffolder:
         ])
 
         deps = {
-            "@angular/core": "^17.0.0",
-            "@angular/common": "^17.0.0",
-            "@angular/compiler": "^17.0.0",
-            "@angular/platform-browser": "^17.0.0",
-            "@angular/platform-browser-dynamic": "^17.0.0",
-            "@angular/router": "^17.0.0",
+            "@angular/core": "^19.0.0",
+            "@angular/common": "^19.0.0",
+            "@angular/compiler": "^19.0.0",
+            "@angular/platform-browser": "^19.0.0",
+            "@angular/platform-browser-dynamic": "^19.0.0",
+            "@angular/router": "^19.0.0",
             "rxjs": "^7.8.0",
-            "zone.js": "^0.14.0",
+            "zone.js": "^0.15.0",
         }
         dev_deps = {
-            "@angular/cli": "^17.0.0",
-            "@angular/compiler-cli": "^17.0.0",
-            "typescript": "^5.2.0",
+            "@angular/cli": "^19.0.0",
+            "@angular/compiler-cli": "^19.0.0",
+            "typescript": "^5.8.0",
         }
 
         package_json = self._create_package_json(config, deps, dev_deps, {
@@ -600,11 +582,10 @@ class ProjectScaffolder:
     def _create_html(self, path: Path, config: ProjectConfig):
         """Create a static HTML/CSS website."""
         # Create directory structure
-        self._create_dirs(path, [
-            "css",
-            "js",
-            "images",
-        ])
+        dirs = ["js", "images"]
+        if config.css_framework != CSSFramework.NONE:
+            dirs.insert(0, "css")
+        self._create_dirs(path, dirs)
 
         # Main HTML file
         self._write_file(path / "index.html", self._html_index(config))
@@ -613,9 +594,10 @@ class ProjectScaffolder:
         self._write_file(path / "about.html", self._html_about(config))
         self._write_file(path / "contact.html", self._html_contact(config))
 
-        # CSS files
-        self._write_file(path / "css/reset.css", self._css_reset())
-        self._write_file(path / "css/style.css", self._css_main(config))
+        # CSS files (skip for pure HTML5)
+        if config.css_framework != CSSFramework.NONE:
+            self._write_file(path / "css/reset.css", self._css_reset())
+            self._write_file(path / "css/style.css", self._css_main(config))
 
         # JavaScript
         self._write_file(path / "js/main.js", self._js_main())
@@ -630,26 +612,14 @@ class ProjectScaffolder:
                 "version": config.version,
                 "description": config.description or "",
                 "scripts": {
-                    "dev": "npx tailwindcss -i ./css/style.css -o ./css/output.css --watch",
-                    "build": "npx tailwindcss -i ./css/style.css -o ./css/output.css --minify",
+                    "dev": "npx @tailwindcss/cli -i ./css/style.css -o ./css/output.css --watch",
+                    "build": "npx @tailwindcss/cli -i ./css/style.css -o ./css/output.css --minify",
                 },
                 "devDependencies": {
-                    "tailwindcss": "^3.4.0"
+                    "@tailwindcss/cli": "^4.1.0"
                 }
             }
             self._write_json(path / "package.json", package_json)
-
-            # Create Tailwind config (no PostCSS needed for CLI usage)
-            tailwind_config = """/** @type {import('tailwindcss').Config} */
-export default {
-  content: ['./**/*.html'],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-"""
-            self._write_file(path / "tailwind.config.js", tailwind_config)
         else:
             # Simple package.json for live server
             package_json = {
@@ -703,7 +673,7 @@ The site will be available at http://localhost:8080
 - BEM naming convention for CSS
 - Semantic HTML5
 - SEO-ready
-{'- Tailwind CSS' if config.css_framework == CSSFramework.TAILWIND else '- Pure CSS'}
+{'- Tailwind CSS' if config.css_framework == CSSFramework.TAILWIND else '- Pure HTML5 (no CSS)' if config.css_framework == CSSFramework.NONE else '- Pure CSS'}
 
 ## Browser Support
 
@@ -757,7 +727,7 @@ Thumbs.db
         ])
 
         deps = {
-            "express": "^4.18.0",
+            "express": "^5.0.0",
             "cors": "^2.8.0",
             "helmet": "^7.1.0",
             "morgan": "^1.10.0",
@@ -767,9 +737,9 @@ Thumbs.db
 
         if config.language == Language.TYPESCRIPT:
             dev_deps.update({
-                "typescript": "^5.3.0",
+                "typescript": "^5.8.0",
                 "@types/node": "^22.0.0",
-                "@types/express": "^4.17.0",
+                "@types/express": "^5.0.0",
                 "@types/cors": "^2.8.0",
                 "@types/morgan": "^1.9.0",
                 "ts-node": "^10.9.0",
@@ -778,8 +748,8 @@ Thumbs.db
             })
 
         if config.orm == ORM.PRISMA:
-            deps["@prisma/client"] = "^5.7.0"
-            dev_deps["prisma"] = "^5.7.0"
+            deps["@prisma/client"] = "^6.0.0"
+            dev_deps["prisma"] = "^6.0.0"
         elif config.orm == ORM.TYPEORM:
             deps["typeorm"] = "^0.3.0"
             deps["reflect-metadata"] = "^0.1.0"
@@ -802,9 +772,9 @@ Thumbs.db
 
         if config.testing:
             dev_deps.update({
-                "vitest": "^1.0.0",
-                "supertest": "^6.3.0",
-                "@types/supertest": "^2.0.0",
+                "vitest": "^3.0.0",
+                "supertest": "^7.0.0",
+                "@types/supertest": "^6.0.0",
             })
 
         package_json = self._create_package_json(config, deps, dev_deps, {
@@ -843,24 +813,24 @@ Thumbs.db
         ])
 
         deps = {
-            "@nestjs/common": "^10.0.0",
-            "@nestjs/core": "^10.0.0",
-            "@nestjs/platform-express": "^10.0.0",
+            "@nestjs/common": "^11.0.0",
+            "@nestjs/core": "^11.0.0",
+            "@nestjs/platform-express": "^11.0.0",
             "reflect-metadata": "^0.1.0",
             "rxjs": "^7.8.0",
         }
         dev_deps = {
-            "@nestjs/cli": "^10.0.0",
-            "@nestjs/schematics": "^10.0.0",
+            "@nestjs/cli": "^11.0.0",
+            "@nestjs/schematics": "^11.0.0",
             "@types/node": "^22.0.0",
-            "@types/express": "^4.17.0",
-            "typescript": "^5.3.0",
+            "@types/express": "^5.0.0",
+            "typescript": "^5.8.0",
             "ts-node": "^10.9.0",
         }
 
         if config.testing:
             dev_deps.update({
-                "@nestjs/testing": "^10.0.0",
+                "@nestjs/testing": "^11.0.0",
                 "jest": "^29.7.0",
                 "@types/jest": "^29.5.0",
                 "ts-jest": "^29.1.0",
@@ -920,9 +890,9 @@ Thumbs.db
 
         # Requirements
         requirements = [
-            "fastapi>=0.109.0",
-            "uvicorn[standard]>=0.25.0",
-            "pydantic>=2.5.0",
+            "fastapi>=0.115.0",
+            "uvicorn[standard]>=0.34.0",
+            "pydantic>=2.10.0",
             "pydantic-settings>=2.1.0",
             "python-dotenv>=1.0.0",
         ]
@@ -958,17 +928,17 @@ Thumbs.db
 
         if config.pytest:
             dev_requirements.extend([
-                "pytest>=7.4.0",
+                "pytest>=8.0.0",
                 "pytest-asyncio>=0.23.0",
                 "pytest-cov>=4.1.0",
-                "httpx>=0.26.0",
+                "httpx>=0.28.0",
             ])
 
         if config.ruff:
-            dev_requirements.append("ruff>=0.1.0")
+            dev_requirements.append("ruff>=0.9.0")
 
         if config.mypy:
-            dev_requirements.append("mypy>=1.8.0")
+            dev_requirements.append("mypy>=1.14.0")
 
         # Write requirements
         self._write_file(path / "requirements.txt", "\n".join(requirements))
@@ -1018,7 +988,7 @@ Thumbs.db
         ])
 
         requirements = [
-            "django>=5.0.0",
+            "django>=5.1.0",
             "python-dotenv>=1.0.0",
             "django-environ>=0.11.0",
         ]
@@ -1125,18 +1095,18 @@ Thumbs.db
 
         deps = {}
         dev_deps = {
-            "typescript": "^5.3.0",
+            "typescript": "^5.8.0",
             "tsup": "^8.0.0",
         }
 
         if config.testing:
-            dev_deps["vitest"] = "^1.0.0"
+            dev_deps["vitest"] = "^3.0.0"
 
         if config.eslint:
             dev_deps.update({
-                "eslint": "^8.56.0",
-                "@typescript-eslint/eslint-plugin": "^6.0.0",
-                "@typescript-eslint/parser": "^6.0.0",
+                "eslint": "^9.17.0",
+                "@eslint/js": "^9.17.0",
+                "typescript-eslint": "^8.18.0",
             })
 
         package_json = self._create_package_json(config, deps, dev_deps, {
@@ -1212,7 +1182,7 @@ Thumbs.db
         ])
 
         deps = {
-            "commander": "^11.1.0",
+            "commander": "^13.0.0",
             "chalk": "^5.3.0",
             "ora": "^8.0.0",
         }
@@ -1220,7 +1190,7 @@ Thumbs.db
 
         if config.language == Language.TYPESCRIPT:
             dev_deps.update({
-                "typescript": "^5.3.0",
+                "typescript": "^5.8.0",
                 "@types/node": "^22.0.0",
                 "tsup": "^8.0.0",
             })
@@ -1255,13 +1225,13 @@ Thumbs.db
 
         deps = {}
         dev_deps = {
-            "electron": "^28.0.0",
+            "electron": "^35.0.0",
             "electron-builder": "^24.9.0",
         }
 
         if config.language == Language.TYPESCRIPT:
             dev_deps.update({
-                "typescript": "^5.3.0",
+                "typescript": "^5.8.0",
                 "@types/node": "^22.0.0",
             })
 
@@ -1300,7 +1270,7 @@ Thumbs.db
                 "test": "turbo test",
             },
             "devDependencies": {
-                "turbo": "^1.11.0",
+                "turbo": "^2.0.0",
             }
         }
         self._write_json(path / "package.json", package_json)
@@ -1309,7 +1279,7 @@ Thumbs.db
         self._write_json(path / "turbo.json", {
             "$schema": "https://turbo.build/schema.json",
             "globalDependencies": ["**/.env.*local"],
-            "pipeline": {
+            "tasks": {
                 "build": {
                     "dependsOn": ["^build"],
                     "outputs": ["dist/**", ".next/**"]
@@ -1656,59 +1626,39 @@ cp .env.example .env.local
             self._create_node_docker(path, config)
 
     def _create_tailwind_config(self, path: Path, config: ProjectConfig, framework: str = "react"):
-        """Create Tailwind CSS configuration."""
-        content_paths = {
-            "html": "'./**/*.html'",
-            "react": "'./index.html', './src/**/*.{js,ts,jsx,tsx}'",
-            "nextjs": "'./src/**/*.{js,ts,jsx,tsx,mdx}'",
-            "vue": "'./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'",
-            "svelte": "'./src/**/*.{html,js,svelte,ts}'",
-        }
-
-        config_content = f"""/** @type {{import('tailwindcss').Config}} */
-export default {{
-  content: [{content_paths.get(framework, content_paths['react'])}],
-  theme: {{
-    extend: {{}},
-  }},
-  plugins: [],
-}}
-"""
-        self._write_file(path / "tailwind.config.js", config_content)
-
-        postcss_content = """export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-}
-"""
-        self._write_file(path / "postcss.config.js", postcss_content)
+        """Tailwind CSS v4 uses CSS-first configuration — no JS config files needed."""
+        pass
 
     def _create_eslint_config(self, path: Path, config: ProjectConfig, framework: str):
-        """Create ESLint configuration."""
-        eslint_config = {
-            "env": {"browser": True, "es2022": True, "node": True},
-            "extends": ["eslint:recommended"],
-            "parserOptions": {"ecmaVersion": "latest", "sourceType": "module"},
-            "rules": {}
-        }
+        """Create ESLint flat configuration (eslint.config.js)."""
+        imports = ["import js from '@eslint/js';"]
+        config_items = ["js.configs.recommended"]
 
         if config.language == Language.TYPESCRIPT:
-            eslint_config["extends"].append("plugin:@typescript-eslint/recommended")
-            eslint_config["parser"] = "@typescript-eslint/parser"
-            eslint_config["plugins"] = ["@typescript-eslint"]
+            imports.append("import tseslint from 'typescript-eslint';")
+            config_items.append("...tseslint.configs.recommended")
 
         if framework == "react":
-            eslint_config["extends"].extend([
-                "plugin:react/recommended",
-                "plugin:react-hooks/recommended"
-            ])
-            eslint_config["plugins"] = eslint_config.get("plugins", []) + ["react", "react-hooks"]
-            eslint_config["settings"] = {"react": {"version": "detect"}}
-            eslint_config["rules"]["react/react-in-jsx-scope"] = "off"
+            imports.append("import reactHooks from 'eslint-plugin-react-hooks';")
+            config_items.append("""  {
+    plugins: {
+      'react-hooks': reactHooks,
+    },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+    },
+  }""")
 
-        self._write_json(path / ".eslintrc.json", eslint_config)
+        config_content = "\n".join(imports) + "\n\n"
+        config_content += "export default [\n"
+        for item in config_items:
+            if item.startswith("  {"):
+                config_content += item + ",\n"
+            else:
+                config_content += f"  {item},\n"
+        config_content += "];\n"
+
+        self._write_file(path / "eslint.config.js", config_content)
 
     def _create_prettier_config(self, path: Path, plugins: List[str] = None):
         """Create Prettier configuration."""
@@ -1832,9 +1782,7 @@ CMD ["node", "dist/index.js"]
 """
         self._write_file(path / "Dockerfile", dockerfile)
 
-        docker_compose = """version: '3.8'
-
-services:
+        docker_compose = """services:
   app:
     build: .
     ports:
@@ -1868,15 +1816,15 @@ export default defineConfig({
 
     def _react_main(self, config: ProjectConfig) -> str:
         ext = "tsx" if config.language == Language.TYPESCRIPT else "jsx"
-        return f"""import React from 'react';
-import ReactDOM from 'react-dom/client';
+        return f"""import {{ StrictMode }} from 'react';
+import {{ createRoot }} from 'react-dom/client';
 import App from './App';
 import './styles/globals.css';
 
-ReactDOM.createRoot(document.getElementById('root'){'!' if config.language == Language.TYPESCRIPT else ''}).render(
-  <React.StrictMode>
+createRoot(document.getElementById('root'){'!' if config.language == Language.TYPESCRIPT else ''}).render(
+  <StrictMode>
     <App />
-  </React.StrictMode>,
+  </StrictMode>,
 );
 """
 
@@ -1897,9 +1845,7 @@ export default App;
 
     def _css_globals(self, config: ProjectConfig) -> str:
         if config.css_framework == CSSFramework.TAILWIND:
-            return """@tailwind base;
-@tailwind components;
-@tailwind utilities;
+            return """@import "tailwindcss";
 """
         return """* {
   margin: 0;
@@ -1947,12 +1893,13 @@ export default defineConfig({
 """
 
     def _nextjs_config(self, config: ProjectConfig) -> str:
-        return """/** @type {import('next').NextConfig} */
-const nextConfig = {
+        return """import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
   reactStrictMode: true,
 };
 
-module.exports = nextConfig;
+export default nextConfig;
 """
 
     def _nextjs_layout(self, config: ProjectConfig) -> str:
@@ -2164,12 +2111,12 @@ export default defineConfig({
 """
 
     def _svelte_layout(self, config: ProjectConfig) -> str:
-        css_import = "import '../app.css';" if config.css_framework == CSSFramework.TAILWIND else ""
-        return f"""<script>
-  {css_import}
+        css_import = "\n  import '../app.css';" if config.css_framework == CSSFramework.TAILWIND else ""
+        return f"""<script>{css_import}
+  let {{ children }} = $props();
 </script>
 
-<slot />
+{{@render children()}}
 """
 
     def _svelte_app_html(self, config: ProjectConfig) -> str:
@@ -2337,7 +2284,7 @@ requires-python = ">={config.python_version}"
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py314"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
@@ -2527,7 +2474,7 @@ else:
 
     def _ruff_config(self) -> str:
         return """line-length = 100
-target-version = "py311"
+target-version = "py314"
 
 [lint]
 select = [
@@ -2571,9 +2518,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 """
 
     def _fastapi_docker_compose(self, config: ProjectConfig) -> str:
-        services = """version: '3.8'
-
-services:
+        services = """services:
   app:
     build: .
     ports:
@@ -2586,7 +2531,7 @@ services:
       - .:/app
 
   db:
-    image: postgres:15
+    image: postgres:17
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -2780,10 +2725,10 @@ dependencies = []
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.4.0",
+    "pytest>=8.0.0",
     "pytest-cov>=4.1.0",
-    "ruff>=0.1.0",
-    "mypy>=1.8.0",
+    "ruff>=0.9.0",
+    "mypy>=1.14.0",
 ]
 
 [build-system]
@@ -2795,7 +2740,7 @@ where = ["src"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py314"
 
 [tool.mypy]
 python_version = "{config.python_version}"
@@ -2891,7 +2836,7 @@ export default defineConfig({
 export default defineConfig({
   entry: ['src/cli.ts'],
   format: ['esm'],
-  target: 'node18',
+  target: 'node24',
   splitting: false,
   sourcemap: true,
   clean: true,
@@ -2986,6 +2931,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     def _html_css_links(self, config: ProjectConfig) -> str:
         """Generate CSS link tags based on framework configuration."""
+        if config.css_framework == CSSFramework.NONE:
+            return ''
         if config.css_framework == CSSFramework.TAILWIND:
             return '\n    <link rel="stylesheet" href="css/output.css">'
         return '''
@@ -3018,7 +2965,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
         """Generate HTML footer."""
         return f'''    <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 {config.name}. All rights reserved.</p>
+            <p>&copy; 2026 {config.name}. All rights reserved.</p>
         </div>
     </footer>'''
 
@@ -3215,11 +3162,7 @@ ul {
     def _css_main(self, config: ProjectConfig) -> str:
         """Generate main stylesheet with BEM methodology."""
         if config.css_framework == CSSFramework.TAILWIND:
-            return """@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Custom styles can be added here */
+            return """@import "tailwindcss";
 """
 
         return """/* Variables */

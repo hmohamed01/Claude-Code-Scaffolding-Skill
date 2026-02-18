@@ -41,26 +41,26 @@ Detailed configuration options for each project type. Load this reference when g
 | Language | TypeScript, JavaScript | TypeScript |
 | Strict mode | Yes, No | Yes |
 | Path aliases (@/*) | Yes, No | Yes |
-| Runtime | Node.js 20/22, Bun, Deno | Node.js 22 |
+| Runtime | Node.js 22/24, Bun, Deno | Node.js 24 |
 | Package Manager | npm, yarn, pnpm, bun | pnpm |
 
 ### Python
 | Option | Choices | Default |
 |--------|---------|---------|
-| Version | 3.11, 3.12, 3.13 | 3.12 |
+| Version | 3.12, 3.13, 3.14 | 3.14 |
 | Environment | venv, uv, poetry, pipenv, conda | uv |
 | Type Hints | Full, Minimal, None | Full |
 
 ### Go
 | Option | Choices | Default |
 |--------|---------|---------|
-| Version | 1.22, 1.23 | 1.23 |
+| Version | 1.25, 1.26 | 1.26 |
 | Module Path | github.com/username/project | - |
 
 ### Rust
 | Option | Choices | Default |
 |--------|---------|---------|
-| Edition | 2021, 2024 | 2021 |
+| Edition | 2021, 2024 | 2024 |
 | Crate Type | Binary, Library, Both | Library |
 
 ### Java/Kotlin
@@ -168,7 +168,7 @@ Detailed configuration options for each project type. Load this reference when g
 ## Next.js Projects
 
 ### Version & Router
-- Next.js 14+ App Router *recommended*
+- Next.js 16+ App Router *recommended*
 - Next.js Pages Router
 
 ### Features
@@ -304,7 +304,7 @@ Detailed configuration options for each project type. Load this reference when g
 ## Angular Projects
 
 ### Version
-- Angular 17+ *recommended*
+- Angular 19+ *recommended*
 
 ### Features
 - TypeScript *default*
@@ -937,8 +937,8 @@ Detailed configuration options for each project type. Load this reference when g
 ### AWS Lambda
 
 #### Runtime
-- Node.js 20 *recommended*
-- Python 3.12
+- Node.js 24 *recommended*
+- Python 3.14
 - Go
 - Rust (custom runtime)
 
@@ -993,7 +993,7 @@ Detailed configuration options for each project type. Load this reference when g
 ## Full-Stack Templates
 
 ### T3 Stack
-- Next.js 14+ (App Router)
+- Next.js 16+ (App Router)
 - tRPC
 - Prisma
 - Tailwind CSS

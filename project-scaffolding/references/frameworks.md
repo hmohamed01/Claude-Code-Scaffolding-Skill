@@ -12,7 +12,7 @@ Build Tool:     Vite (fast HMR, ESM-native)
 Language:       TypeScript (strict mode)
 Styling:        Tailwind CSS
 State:          Zustand or TanStack Query
-Routing:        React Router v6 or TanStack Router
+Routing:        React Router v7 or TanStack Router
 Forms:          React Hook Form + Zod
 Testing:        Vitest + React Testing Library
 ```
@@ -35,9 +35,8 @@ my-react-app/
 ├── tests/
 │   ├── unit/
 │   └── e2e/
-├── .eslintrc.json
+├── eslint.config.js
 ├── .prettierrc
-├── tailwind.config.js
 ├── tsconfig.json
 ├── vite.config.ts
 └── package.json
@@ -127,7 +126,7 @@ export function useCreateUser() {
 
 #### Recommended Stack
 ```
-Version:        14+ with App Router
+Version:        16+ with App Router
 Language:       TypeScript (strict)
 Styling:        Tailwind CSS
 Database:       Prisma or Drizzle
@@ -166,8 +165,7 @@ my-nextjs-app/
 │   └── migrations/
 ├── public/
 ├── tests/
-├── next.config.js
-├── tailwind.config.ts
+├── next.config.ts
 └── package.json
 ```
 
@@ -195,7 +193,7 @@ export function UserForm() {
 }
 ```
 
-#### Server Actions (Next.js 14+)
+#### Server Actions
 
 ```typescript
 // app/actions.ts
@@ -415,7 +413,7 @@ routes/
 
 #### Recommended Stack
 ```
-Python:         3.12+
+Python:         3.14+
 Async:          Full async/await
 Database:       PostgreSQL + asyncpg
 ORM:            SQLAlchemy 2.0 (async)
@@ -567,7 +565,7 @@ async def get_current_user(
 
 #### Recommended Stack
 ```
-Version:        5.x
+Version:        5.1+
 API:            Django REST Framework
 Database:       PostgreSQL
 Auth:           Django Allauth (social)
@@ -633,7 +631,7 @@ AUTH_USER_MODEL = 'users.User'
 #### Recommended Stack
 ```
 Language:       TypeScript
-Runtime:        Node.js 22+
+Runtime:        Node.js 24+
 ORM:            Prisma or Drizzle
 Validation:     Zod
 Auth:           Passport.js or custom JWT
