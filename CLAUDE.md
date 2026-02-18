@@ -195,10 +195,21 @@ Template methods return strings with file contents. To customize:
 2. Modify the returned string
 3. Use f-strings to inject config values: `f"{config.name}"`
 
+## Packaging
+
+After any changes to files under `project-scaffolding/`, repackage the `.skill` file at the repo root:
+
+```bash
+cd project-scaffolding && zip -r ../project-scaffolding.skill SKILL.md scripts/ references/
+```
+
+This keeps `project-scaffolding.skill` in sync with the source files. Always do this before committing.
+
 ## Important Notes
 
 - **SKILL.md is the source of truth** for what the skill can do - always update it when adding features
 - **Keep scaffold.py and SKILL.md in sync** - options in SKILL.md must be implemented in scaffold.py
+- **Repackage the .skill file** after any changes to `project-scaffolding/` — see Packaging section above
 - **Use type hints** - The codebase uses Python dataclasses and type hints throughout
 - **Follow the pattern** - New project creators should match the structure of existing ones
 - **Test locally first** - scaffold.py can be run directly without Claude Code for faster iteration
